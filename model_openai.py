@@ -20,13 +20,18 @@ def format_messages(messages, variables={}):
 
 class OpenAI_Model:
     def __init__(self):
-        if "AZURE_OPENAI_API_KEY" in os.environ and "AZURE_OPENAI_ENDPOINT" in os.environ:
+        if "VLLM_API_BASE" in os.environ:
+            self.client = OpenAI(api_key=os.environ.get("VLLM_API_KEY", "EMPTY"), base_url=os.environ["VLLM_API_BASE"])
+        elif "AZURE_OPENAI_API_KEY" in os.environ and "AZURE_OPENAI_ENDPOINT" in os.environ:
             self.client = AzureOpenAI(api_key=os.environ["AZURE_OPENAI_API_KEY"], azure_endpoint=os.environ["AZURE_OPENAI_ENDPOINT"], api_version="2024-10-01-preview")
         else:
             assert "OPENAI_API_KEY" in os.environ
             self.client = OpenAI(api_key=os.environ["OPENAI_API_KEY"])
 
     def cost_calculator(self, model, usage, is_batch_model=False):
+        if "VLLM_API_BASE" in os.environ:
+            return 0
+
         is_finetuned, base_model = False, model
         if model.startswith("ft:gpt"):
             is_finetuned = True
@@ -99,7 +104,7 @@ class OpenAI_Model:
         response_text = response["choices"][0]["message"]["content"]
         total_usd = self.cost_calculator(model, usage)
         prompt_tokens_cached = 0
-        if 'prompt_tokens_details' in usage:
+        if 'prompt_tokens_details' in usage and "VLLM_API_BASE" not in os.environ:
             prompt_tokens_cached = usage['prompt_tokens_details']['cached_tokens']
 
         if not return_metadata:
@@ -126,7 +131,8 @@ if __name__ == "__main__":
         {"role": "assistant", "content": '{"joke": '}
     ]
 
-    model = "gpt-4o"
+    # model = "gpt-4o"
+    model = "Qwen/Qwen3.5-9B"
     response = generate(messages, model=model, return_metadata=True)
     
     print(response)
