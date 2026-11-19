@@ -1,0 +1,50 @@
+[project]
+name = "lost-in-conversation"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+authors = [
+    { name = "Hayate Shiroma", email = "e225719@ie.u-ryukyu.ac.jp" }
+]
+requires-python = ">=3.12"
+dependencies = [
+    "gitpython>=3.2.1",
+    "nltk>=3.10.4",
+    "numpy>=2.5.4",
+    "pandas>=3.1.1",
+    "pymongo>=4.20.0",
+    "sacrebleu>=2.6.0",
+    "sqlparse>=0.6.1",
+    "streamlit>=1.67.0",
+    "tiktoken>=0.14.0",
+    "tqdm>=4.70.1",
+    "torch>=2.11.0",
+    "torchvision>=0.26.0",
+    "torchcodec>=0.16.0",
+    "nnsight>=0.8.2",
+    "accelerate>=1.16.0",
+    "markdown>=3.11.3",
+]
+
+[project.scripts]
+lost-in-conversation = "lost_in_conversation:main"
+
+[build-system]
+requires = ["uv_build>=0.13.8,<0.14.0"]
+build-backend = "uv_build"
+
+[[tool.uv.index]]
+name = "pytorch-cu129"
+url = "https://download.pytorch.org/whl/cu129"
+explicit = true
+
+[tool.uv.sources]
+torch = [
+  { index = "pytorch-cu129", marker = "sys_platform == 'linux' or sys_platform == 'win32'" },
+]
+torchvision = [
+  { index = "pytorch-cu129", marker = "sys_platform == 'linux' or sys_platform == 'win32'" },
+]
+torchcodec = [
+  { index = "pytorch-cu129", marker = "sys_platform == 'linux' or sys_platform == 'win32'" },
+]
