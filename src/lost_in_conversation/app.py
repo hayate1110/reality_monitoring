@@ -24,6 +24,18 @@ def save_annotations(annotations, output_path):
         for annotation in annotations:
             f.write(json.dumps(annotation, ensure_ascii=False) + "\n")
 
+def load_annotations(file_path: Path):
+    if not file_path.exists():
+        return []
+
+    annotations = []
+
+    with file_path.open("r", encoding="utf-8") as f:
+        for line in f:
+            annotations.append(json.loads(line))
+
+    return annotations
+
 content_component = st.components.v2.component(
     name="content_viewer",
     html='<div id="content" style="white-space: pre-wrap;"></div>',
@@ -192,6 +204,9 @@ def main():
 
     if "current_index" not in st.session_state:
         st.session_state.current_index = 0
+
+    if "annotations" not in st.session_state:
+        st.session_state.annotations = load_annotations(output_path)
 
     # Header
     st.title("Conversation Viewer")
